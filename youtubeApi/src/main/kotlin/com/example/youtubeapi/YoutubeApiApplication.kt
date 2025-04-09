@@ -1,11 +1,11 @@
-package com.example.ko_boot_react
+package com.example.youtubeapi
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class KoBootReactApplication
+class YoutubeApiApplication
 
 fun main(args: Array<String>) {
-    runApplication<KoBootReactApplication>(*args)
+    runApplication<YoutubeApiApplication>(*args)
 }
