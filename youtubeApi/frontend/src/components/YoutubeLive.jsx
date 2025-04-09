@@ -1,21 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import YoutubeVideoCard from './YoutubeVideoCard';
 
-function YoutubeLive({ channelId }) {
+function YoutubeLive({ channelId, apiKey }) {
     const [videos, setVideos] = useState([]);
 
     useEffect(() => {
-        if (!channelId) return;
+        if (!channelId || !apiKey) return;
 
         axios
-            .get(`/api/youtube/live?channelId=${channelId}`)
+            .get('/api/youtube/live', {
+                params: { channelId, apiKey },
+            })
             .then((res) => {
                 if (res.data.items) {
                     setVideos(res.data.items);
                 }
             })
             .catch((err) => console.error('API Error:', err));
-    }, [channelId]);
+    }, [channelId, apiKey]);
 
     return (
         <div>
@@ -25,17 +28,13 @@ function YoutubeLive({ channelId }) {
             ) : (
                 <ul>
                     {videos.map((video) => (
-                        <li key={video.id.videoId}>
-                            <img src={video.snippet.thumbnails.default.url} alt={video.snippet.title} />
-                            <p>{video.snippet.title}</p>
-                            <a
-                                href={`https://www.youtube.com/watch?v=${video.id.videoId}`}
-                                target="_blank"
-                                rel="noreferrer"
-                            >
-                                시청하기
-                            </a>
-                        </li>
+                        <YoutubeVideoCard
+                            key={video.id?.videoId}
+                            videoId={video.id?.videoId}
+                            title={video.snippet?.title}
+                            thumbnail={video.snippet?.thumbnails?.default?.url}
+                            label="시청하기"
+                        />
                     ))}
                 </ul>
             )}
