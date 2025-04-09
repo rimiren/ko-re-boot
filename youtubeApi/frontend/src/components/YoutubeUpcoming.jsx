@@ -2,15 +2,15 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import YoutubeVideoCard from './YoutubeVideoCard';
 
-function YoutubeUpcoming({ channelId, apiKey }) {
+function YoutubeUpcoming({ channelId }) {
     const [videos, setVideos] = useState([]);
 
     useEffect(() => {
-        if (!channelId || !apiKey) return;
+        if (!channelId) return;
 
         axios
             .get('/api/youtube/upcoming', {
-                params: { channelId, apiKey },
+                params: { channelId },
             })
             .then((res) => {
                 if (res.data.items) {
@@ -18,7 +18,7 @@ function YoutubeUpcoming({ channelId, apiKey }) {
                 }
             })
             .catch((err) => console.error('API Error:', err));
-    }, [channelId, apiKey]);
+    }, [channelId]);
 
     return (
         <div>

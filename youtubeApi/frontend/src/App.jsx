@@ -4,21 +4,9 @@ import YoutubeUpcoming from './components/YoutubeUpcoming';
 import './App.css';
 
 const channels = [
-    {
-        name: '츠나',
-        id: 'UCIjdfjcSaEgdjwbgjxC3ZWg',
-        apiKey: 'AIzaSyA-KEY1',
-    },
-    {
-        name: '미오',
-        id: 'UCp-5t9SrOQwXMU7iIjQfARg',
-        apiKey: 'AIzaSyB-KEY2',
-    },
-    {
-        name: 'SBS 뉴스',
-        id: 'UCOmHUn--16B90oW2L6FRR3A',
-        apiKey: 'AIzaSyC-KEY3',
-    },
+    { name: '츠나', id: 'UCIjdfjcSaEgdjwbgjxC3ZWg' },
+    { name: '미오', id: 'UCp-5t9SrOQwXMU7iIjQfARg' },
+    { name: '후부키', id: 'UCdn5BQ06XqgXoAxIhbqw5Rg' },
 ];
 
 function App() {
@@ -29,7 +17,6 @@ function App() {
         <div className="app-container">
             <h1 className="app-title">V!Spo</h1>
 
-            {/* 채널 선택 */}
             <div style={{ marginBottom: '16px' }}>
                 <label htmlFor="channelSelect">채널 선택: </label>
                 <select
@@ -49,7 +36,6 @@ function App() {
                 </select>
             </div>
 
-            {/* 보기 버튼 */}
             <div className="button-group">
                 <button
                     className={`view-button ${view === 'live' ? 'active' : ''}`}
@@ -65,19 +51,8 @@ function App() {
                 </button>
             </div>
 
-            {/* 콘텐츠 렌더링 */}
-            {view === 'live' && (
-                <YoutubeLive
-                    channelId={selectedChannel.id}
-                    apiKey={selectedChannel.apiKey}
-                />
-            )}
-            {view === 'upcoming' && (
-                <YoutubeUpcoming
-                    channelId={selectedChannel.id}
-                    apiKey={selectedChannel.apiKey}
-                />
-            )}
+            {view === 'live' && <YoutubeLive channelId={selectedChannel.id} />}
+            {view === 'upcoming' && <YoutubeUpcoming channelId={selectedChannel.id} />}
         </div>
     );
 }
