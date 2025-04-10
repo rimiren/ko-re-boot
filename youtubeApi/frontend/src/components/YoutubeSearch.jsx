@@ -11,9 +11,15 @@ function YoutubeSearch() {
         if (!query) return;
         setLoading(true);
         try {
-            const res = await axios.get('/api/youtube/search', {
-                params: { query }
+            const res = await axios.get('/api/youtube/channel', {
+                params: {
+                    channelId: '',
+                    query: query,
+                },
             });
+
+            console.log("🎬 응답:", res.data);
+
             if (res.data.items) {
                 setVideos(res.data.items);
             }
@@ -32,7 +38,7 @@ function YoutubeSearch() {
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="검색어를 입력하세요"
-                    className="border px-4 py-2 rounded-md shadow-sm focus:outline-none w-full md:w-1/2"
+                    className="w-60 border px-4 py-2 rounded-md shadow-sm focus:outline-none"
                 />
                 <button
                     onClick={handleSearch}
@@ -45,13 +51,15 @@ function YoutubeSearch() {
             {loading && <p className="text-gray-500 mb-4">검색 중...</p>}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {videos.map((video) => (
-                    <YoutubeVideoCard
-                        key={video.id?.videoId}
-                        videoId={video.id?.videoId}
-                        title={video.snippet?.title}
-                    />
-                ))}
+                {videos
+                    .filter(video => video.id?.kind === "youtube#video" && video.id?.videoId)
+                    .map((video) => (
+                        <YoutubeVideoCard
+                            key={video.id.videoId}
+                            videoId={video.id.videoId}
+                            title={video.snippet?.title}
+                        />
+                    ))}
             </div>
 
             {!loading && videos.length === 0 && (

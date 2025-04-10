@@ -2,13 +2,13 @@ package com.example.youtubeApi.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.client.RestTemplate
 
 @Configuration
-class WebClientConfig {
+class RestTemplateConfig {
 
     @Bean
-    fun webClient(): WebClient {
-        return WebClient.builder().build()
+    fun restTemplate(): RestTemplate {
+        return RestTemplate()
     }
 }

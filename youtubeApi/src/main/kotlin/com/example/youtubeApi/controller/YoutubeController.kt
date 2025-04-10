@@ -11,9 +11,12 @@ import org.springframework.web.bind.annotation.*
 class YoutubeController(
     private val youtubeService: YoutubeService
 ) {
-    @GetMapping("/channel", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getVideosByChannelId(@RequestParam channelId: String): ResponseEntity<Any> {
-        val result = youtubeService.searchVideosByChannelId(channelId)
+    @GetMapping("/channel")
+    fun getVideosByChannelId(
+        @RequestParam channelId: String,
+        @RequestParam(required = false, defaultValue = "고양이") query: String
+    ): ResponseEntity<Any> {
+        val result = youtubeService.searchVideos(channelId, query)
         val json = ObjectMapper().readTree(result)
         return ResponseEntity.ok(json)
     }
