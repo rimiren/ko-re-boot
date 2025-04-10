@@ -6,41 +6,35 @@ import org.springframework.web.reactive.function.client.WebClient
 
 @Service
 class YoutubeService(
-    private val webClient: WebClient,
-    @Value("\${youtube.api.key}")
-    private val apiKey: String
+    private val webClient: WebClient
 ) {
-    fun getLiveVideos(channelId: String): String {
-        val url = "https://www.googleapis.com/youtube/v3/search" +
-                "?part=snippet" +
-                "&channelId=$channelId" +
-                "&type=video" +
-                "&eventType=live" +
-                "&key=$apiKey"
+    @Value("\${youtube.api.key}")
+    private lateinit var apiKey: String
 
-        println("📡 YouTube Live API 호출: $url")
+    fun searchVideosByChannelId(channelId: String): String {
+        val baseUrl = "https://www.googleapis.com/youtube/v3/search"
 
-        return webClient.get()
-            .uri(url)
-            .retrieve()
-            .bodyToMono(String::class.java)
-            .block() ?: ""
-    }
-
-    fun getUpcomingVideos(channelId: String): String {
-        val url = "https://www.googleapis.com/youtube/v3/search" +
-                "?part=snippet" +
-                "&channelId=$channelId" +
-                "&type=video" +
-                "&eventType=upcoming" +
-                "&key=$apiKey"
-
-        println("📡 YouTube Upcoming API 호출: $url")
+        val url = if (channelId.isNotBlank()) {
+            "$baseUrl?part=snippet" +
+                    "&channelId=$channelId" +
+                    "&type=video" +
+                    "&eventType=upcoming,live" + // 둘 다 포함
+                    "&order=date" +
+                    "&maxResults=10" +
+                    "&key=$apiKey"
+        } else {
+            "$baseUrl?part=snippet" +
+                    "&q=고양이" +
+                    "&type=video" +
+                    "&maxResults=10" +
+                    "&order=date" +
+                    "&key=$apiKey"
+        }
 
         return webClient.get()
             .uri(url)
             .retrieve()
             .bodyToMono(String::class.java)
-            .block() ?: ""
+            .block() ?: "{}"
     }
 }
