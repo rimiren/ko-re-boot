@@ -2,45 +2,26 @@ package com.example.youtubeApi.service
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
-import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.client.RestTemplate
 
 @Service
 class YoutubeService(
-    private val webClient: WebClient,
-    @Value("\${youtube.api.key}")
-    private val apiKey: String
+    private val restTemplate: RestTemplate
 ) {
-    fun getLiveVideos(channelId: String): String {
-        val url = "https://www.googleapis.com/youtube/v3/search" +
-                "?part=snippet" +
-                "&channelId=$channelId" +
-                "&type=video" +
-                "&eventType=live" +
-                "&key=$apiKey"
+    @Value("\${youtube.api.key}")
+    private lateinit var apiKey: String
 
-        println("📡 YouTube Live API 호출: $url")
+    fun searchVideos(channelId: String, query: String): String {
+        val baseUrl = "https://www.googleapis.com/youtube/v3/search"
 
-        return webClient.get()
-            .uri(url)
-            .retrieve()
-            .bodyToMono(String::class.java)
-            .block() ?: ""
-    }
+        val url = if (channelId.isNotBlank()) {
+            "$baseUrl?part=snippet&channelId=$channelId&type=video&order=date&maxResults=10&key=$apiKey"
+        } else {
+            "$baseUrl?part=snippet&q=$query&type=video&order=date&maxResults=10&key=$apiKey"
+        }
 
-    fun getUpcomingVideos(channelId: String): String {
-        val url = "https://www.googleapis.com/youtube/v3/search" +
-                "?part=snippet" +
-                "&channelId=$channelId" +
-                "&type=video" +
-                "&eventType=upcoming" +
-                "&key=$apiKey"
+        println("🔍 YouTube API 호출 URL: $url")
 
-        println("📡 YouTube Upcoming API 호출: $url")
-
-        return webClient.get()
-            .uri(url)
-            .retrieve()
-            .bodyToMono(String::class.java)
-            .block() ?: ""
+        return restTemplate.getForObject(url, String::class.java) ?: "{}"
     }
 }
