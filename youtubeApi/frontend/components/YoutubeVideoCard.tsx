@@ -1,4 +1,13 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+
+type Props = {
+    videoId: string;
+    title: string;
+    thumbnailUrl: string;
+    channelTitle: string;
+    publishedAt: string;
+    liveType: 'live' | 'upcoming' | 'none';
+};
 
 export default function YoutubeVideoCard({
                                              videoId,
@@ -6,25 +15,19 @@ export default function YoutubeVideoCard({
                                              thumbnailUrl,
                                              channelTitle,
                                              publishedAt,
-                                             liveType, // 'live' | 'upcoming' | 'none'
-                                         }) {
+                                             liveType,
+                                         }: Props) {
     const [favorite, setFavorite] = useState(false);
 
     const handleFavoriteToggle = () => {
         setFavorite(!favorite);
-        // 즐겨찾기 저장/삭제 로직은 추후 구현
+        // TODO: 즐겨찾기 저장/삭제 로직
     };
 
     return (
         <div className="col-md-4 mb-4">
             <div className="card h-100 shadow-sm position-relative">
-                <img
-                    src={thumbnailUrl}
-                    className="card-img-top img-fluid"
-                    alt="썸네일"
-                />
-
-                {/* LIVE / 예정 뱃지 */}
+                <img src={thumbnailUrl} className="card-img-top img-fluid" alt="썸네일" />
                 {liveType === 'live' && (
                     <span className="badge bg-danger position-absolute top-0 start-0 m-2">LIVE</span>
                 )}

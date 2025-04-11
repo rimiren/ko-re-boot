@@ -1,12 +1,12 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import YoutubeCategory from './YoutubeCategory';
 import YoutubeSearch from './YoutubeSearch';
 
 export function MainContent() {
-    const [tab, setTab] = useState('category'); // or 'search'
+    const [tab, setTab] = useState<'category' | 'search'>('category');
 
     return (
-        <main className="flex-1 p-6">
+        <main className="flex-grow-1 p-4">
             <div className="mb-4 d-flex gap-2">
                 <button
                     onClick={() => setTab('category')}
@@ -14,7 +14,6 @@ export function MainContent() {
                 >
                     즐겨보는 탭
                 </button>
-
                 <button
                     onClick={() => setTab('search')}
                     className={`btn ${tab === 'search' ? 'btn-primary' : 'btn-outline-secondary'}`}

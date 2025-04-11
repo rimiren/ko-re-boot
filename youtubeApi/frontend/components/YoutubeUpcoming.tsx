@@ -2,22 +2,21 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import YoutubeVideoCard from './YoutubeVideoCard';
 
-function YoutubeUpcoming({ channelId }) {
-    const [videos, setVideos] = useState([]);
+type Props = {
+    channelId: string;
+};
+
+function YoutubeUpcoming({ channelId }: Props) {
+    const [videos, setVideos] = useState<any[]>([]);
 
     useEffect(() => {
         if (!channelId) return;
 
-        axios
-            .get('/api/youtube/upcoming', {
-                params: { channelId },
-            })
-            .then((res) => {
-                if (res.data.items) {
-                    setVideos(res.data.items);
-                }
-            })
-            .catch((err) => console.error('API Error:', err));
+        axios.get(`${process.env.NEXT_PUBLIC_API_BASE}/api/youtube/upcoming`, {
+            params: { channelId },
+        }).then((res) => {
+            setVideos(res.data.items || []);
+        }).catch((err) => console.error('API Error:', err));
     }, [channelId]);
 
     return (
@@ -26,17 +25,19 @@ function YoutubeUpcoming({ channelId }) {
             {videos.length === 0 ? (
                 <p>예정된 방송이 없습니다.</p>
             ) : (
-                <ul>
+                <div className="row">
                     {videos.map((video) => (
                         <YoutubeVideoCard
                             key={video.id?.videoId}
                             videoId={video.id?.videoId}
                             title={video.snippet?.title}
-                            thumbnail={video.snippet?.thumbnails?.default?.url}
-                            label="미리보기"
+                            thumbnailUrl={video.snippet?.thumbnails?.default?.url}
+                            channelTitle={video.snippet?.channelTitle}
+                            publishedAt={video.snippet?.publishedAt}
+                            liveType="upcoming"
                         />
                     ))}
-                </ul>
+                </div>
             )}
         </div>
     );

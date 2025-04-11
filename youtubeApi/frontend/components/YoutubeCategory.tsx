@@ -13,8 +13,8 @@ const channels = [
 
 function YoutubeCategory() {
     const [selectedChannelId, setSelectedChannelId] = useState(channels[0].id);
-    const [videos, setVideos] = useState([]);
-    const [viewMode, setViewMode] = useState(null); // 'live' | 'upcoming'
+    const [videos, setVideos] = useState<any[]>([]);
+    const [viewMode, setViewMode] = useState<'live' | 'upcoming' | null>(null);
     const [showOptions, setShowOptions] = useState(false);
     const [loading, setLoading] = useState(false);
 
@@ -23,7 +23,7 @@ function YoutubeCategory() {
         setViewMode(null);
         setShowOptions(false);
         try {
-            const res = await axios.get('/api/youtube/channel', {
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE}/api/youtube/channel`, {
                 params: { channelId: selectedChannelId },
             });
             if (res.data.items) {
@@ -40,12 +40,10 @@ function YoutubeCategory() {
     const liveVideos = videos.filter(v => v.snippet?.liveBroadcastContent === 'live');
     const upcomingVideos = videos.filter(v => v.snippet?.liveBroadcastContent === 'upcoming');
 
-    const renderVideoList = (list, label) => {
-        if (list.length === 0) {
-            return <p className="text-muted mb-3">{label}이(가) 없습니다.</p>;
-        }
-        return (
-            <div className="row">
+    const renderVideoList = (list: any[], label: string) => (
+        list.length === 0
+            ? <p className="text-muted mb-3">{label}이(가) 없습니다.</p>
+            : <div className="row">
                 {list.map(video => (
                     <YoutubeVideoCard
                         key={video.id.videoId}
@@ -58,12 +56,10 @@ function YoutubeCategory() {
                     />
                 ))}
             </div>
-        );
-    };
+    );
 
     return (
         <div>
-            {/* 채널 선택 및 조회 버튼 */}
             <div className="d-flex align-items-center gap-2 mb-4">
                 <select
                     className="form-select w-auto"
@@ -71,14 +67,10 @@ function YoutubeCategory() {
                     onChange={(e) => setSelectedChannelId(e.target.value)}
                 >
                     {channels.map((ch) => (
-                        <option key={ch.name} value={ch.id}>
-                            {ch.name}
-                        </option>
+                        <option key={ch.name} value={ch.id}>{ch.name}</option>
                     ))}
                 </select>
-                <button className="btn btn-primary" onClick={handleSearch}>
-                    영상 보기
-                </button>
+                <button className="btn btn-primary" onClick={handleSearch}>영상 보기</button>
             </div>
 
             {loading && <p className="text-muted">불러오는 중...</p>}

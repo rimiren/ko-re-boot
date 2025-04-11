@@ -4,20 +4,18 @@ import YoutubeVideoCard from './YoutubeVideoCard';
 
 function YoutubeSearch() {
     const [query, setQuery] = useState('');
-    const [videos, setVideos] = useState([]);
+    const [videos, setVideos] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
 
     const handleSearch = async () => {
         if (!query) return;
         setLoading(true);
         try {
-            const res = await axios.get('/api/youtube/channel', {
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE}/api/youtube/channel`, {
                 params: { channelId: '', query },
             });
 
-            if (res.data.items) {
-                setVideos(res.data.items);
-            }
+            setVideos(res.data.items || []);
         } catch (err) {
             console.error('검색 에러:', err);
         } finally {
@@ -35,9 +33,7 @@ function YoutubeSearch() {
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="검색어를 입력하세요"
                 />
-                <button className="btn btn-primary" onClick={handleSearch}>
-                    검색
-                </button>
+                <button className="btn btn-primary" onClick={handleSearch}>검색</button>
             </div>
 
             {loading && <p className="text-muted mb-3">검색 중...</p>}
