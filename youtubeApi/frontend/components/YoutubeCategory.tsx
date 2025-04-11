@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import YoutubeVideoCard from './YoutubeVideoCard';
 
-// 채널 목록: 이름 + 채널 ID (고양이는 빈 문자열)
 const channels = [
     { name: '츠나', id: 'UCIjdfjcSaEgdjwbgjxC3ZWg' },
     { name: '미오', id: 'UCp-5t9SrOQwXMU7iIjQfARg' },
@@ -14,8 +13,8 @@ const channels = [
 
 function YoutubeCategory() {
     const [selectedChannelId, setSelectedChannelId] = useState(channels[0].id);
-    const [videos, setVideos] = useState([]);
-    const [viewMode, setViewMode] = useState(null); // 'live' | 'upcoming'
+    const [videos, setVideos] = useState<any[]>([]);
+    const [viewMode, setViewMode] = useState<'live' | 'upcoming' | null>(null);
     const [showOptions, setShowOptions] = useState(false);
     const [loading, setLoading] = useState(false);
 
@@ -24,8 +23,8 @@ function YoutubeCategory() {
         setViewMode(null);
         setShowOptions(false);
         try {
-            const res = await axios.get('/api/youtube/channel', {
-                params: { channelId: selectedChannelId }
+            const res = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE}/api/youtube/channel`, {
+                params: { channelId: selectedChannelId },
             });
             if (res.data.items) {
                 setVideos(res.data.items);
@@ -41,66 +40,58 @@ function YoutubeCategory() {
     const liveVideos = videos.filter(v => v.snippet?.liveBroadcastContent === 'live');
     const upcomingVideos = videos.filter(v => v.snippet?.liveBroadcastContent === 'upcoming');
 
-    const renderVideoList = (videoList, label) => {
-        if (videoList.length === 0) {
-            return <p className="text-gray-500 mb-4">{label}이(가) 없습니다.</p>;
-        }
-        return (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {videoList.map((video) => (
+    const renderVideoList = (list: any[], label: string) => (
+        list.length === 0
+            ? <p className="text-muted mb-3">{label}이(가) 없습니다.</p>
+            : <div className="row">
+                {list.map(video => (
                     <YoutubeVideoCard
-                        key={video.id?.videoId}
-                        videoId={video.id?.videoId}
-                        title={video.snippet?.title}
+                        key={video.id.videoId}
+                        videoId={video.id.videoId}
+                        title={video.snippet.title}
+                        thumbnailUrl={video.snippet.thumbnails.medium.url}
+                        channelTitle={video.snippet.channelTitle}
+                        publishedAt={video.snippet.publishedAt}
+                        liveType={video.snippet.liveBroadcastContent || 'none'}
                     />
                 ))}
             </div>
-        );
-    };
+    );
 
     return (
         <div>
-            {/* 드롭다운 + 버튼 */}
-            <div className="flex gap-4 items-center mb-6">
+            <div className="d-flex align-items-center gap-2 mb-4">
                 <select
+                    className="form-select w-auto"
                     value={selectedChannelId}
                     onChange={(e) => setSelectedChannelId(e.target.value)}
-                    className="border px-4 py-2 rounded-md shadow-sm"
                 >
                     {channels.map((ch) => (
                         <option key={ch.name} value={ch.id}>{ch.name}</option>
                     ))}
                 </select>
-                <button
-                    onClick={handleSearch}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-md shadow hover:bg-blue-700 transition"
-                >
-                    영상 보기
-                </button>
+                <button className="btn btn-primary" onClick={handleSearch}>영상 보기</button>
             </div>
 
-            {/* 로딩 표시 */}
-            {loading && <p className="text-gray-500">불러오는 중...</p>}
+            {loading && <p className="text-muted">불러오는 중...</p>}
 
-            {/* 필터 버튼 */}
             {showOptions && (
-                <div className="mb-6 flex gap-4">
+                <div className="d-flex gap-2 mb-4">
                     <button
+                        className={`btn ${viewMode === 'live' ? 'btn-primary' : 'btn-outline-secondary'}`}
                         onClick={() => setViewMode('live')}
-                        className={`px-4 py-2 rounded shadow ${viewMode === 'live' ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}
                     >
                         실시간 스트리밍
                     </button>
                     <button
+                        className={`btn ${viewMode === 'upcoming' ? 'btn-primary' : 'btn-outline-secondary'}`}
                         onClick={() => setViewMode('upcoming')}
-                        className={`px-4 py-2 rounded shadow ${viewMode === 'upcoming' ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}
                     >
                         스트리밍 예정
                     </button>
                 </div>
             )}
 
-            {/* 조건부 영상 리스트 출력 */}
             {viewMode === 'live' && renderVideoList(liveVideos, '실시간 스트리밍')}
             {viewMode === 'upcoming' && renderVideoList(upcomingVideos, '스트리밍 예정')}
         </div>
