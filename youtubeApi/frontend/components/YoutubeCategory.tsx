@@ -8,6 +8,7 @@ const channels = [
     { name: '후부키', id: 'UCdn5BQ06XqgXoAxIhbqw5Rg' },
     { name: '토와', id: 'UC1uv2Oq6kNxgATlCiez59hw' },
     { name: '미코', id: 'UC-hM6YJuNYVAmUWxeIr9FeA' },
+    { name: '와타메', id: 'UCqm3BQLlJfvkTsX_hvm0UmA' },
     { name: '고양이', id: '' },
 ];
 
